@@ -17,12 +17,19 @@ class Cell:
         self.botton_right = (int(self.x+self.base/2),int(self.y+self.altura/2))
         self.botton_left = (int(self.x-self.base/2),int(self.y+self.altura/2))
         # colors
+        self.prev_fill = (140,140,140)
         self.fill = (140,140,140) # fill color
+        self.prev_border = (50,50,50)
         self.border = (50,50,50) # borders color
 
-    def def_color(self,fill,border): # fill and color must be tuples
-        self.fill = fill
-        self.border = border
+    def def_color(self,new_fill,new_border): # fill and color must be tuples
+        if self.fill != new_fill:
+            self.prev_fill = self.fill
+        self.fill = new_fill
+        if self.border != new_border:
+            self.prev_border = self.border
+        self.border = new_border
+
 
     def show_id(self,img):
         font = cv2.FONT_HERSHEY_SIMPLEX
@@ -65,40 +72,18 @@ class Map:
 
         # define start and end points
         # (row,col,fill,border)
-        self.start = ((int(len(self.cell_grid)-1) , int(len(self.cell_grid[0])/2)) , (255,255,0), (50,50,50))
-        self.end   = ((0                          , int(len(self.cell_grid[0])/2)) , (0,255,0)  , (50,50,50))
-        self.cell_grid[self.start[0][0]][self.start[0][1]].def_color(self.start[1],self.start[2])
-        self.cell_grid[self.end[0][0]][self.end[0][1]].def_color(self.end[1],self.end[2])
+        self.start = ((0,0) , (255,255,0), (50,50,50))
+        self.end   = ((0,0) , (30,30,135)  , (50,50,50))
 
 
     def change_start(self,new_start_cell):
-        self.cell_grid[self.start[0][0]][self.start[0][1]].def_color((140,140,140),(50,50,50))
-        aux_debug = [new_start_cell[0],new_start_cell[1]]
-        if new_start_cell[0] >= self.rows:
-            aux_debug[0] = self.rows-1
-        elif new_start_cell[0] < 0:
-            aux_debug[0] = 0
-        if new_start_cell[1] >= self.cols:
-            aux_debug[1] = self.cols-1
-        elif new_start_cell[1] < 0:
-            aux_debug[1] = 0
-
-        self.start = ((aux_debug[0],aux_debug[1]) , self.start[1], self.start[2])
+        self.cell_grid[self.start[0][0]][self.start[0][1]].def_color(self.cell_grid[self.start[0][0]][self.start[0][1]].prev_fill,self.cell_grid[self.start[0][0]][self.start[0][1]].prev_border)
+        self.start = ((new_start_cell[0],new_start_cell[1]) , self.start[1], self.start[2])
         self.cell_grid[self.start[0][0]][self.start[0][1]].def_color(self.start[1],self.start[2])
 
     def change_end(self,new_end_cell):
-        self.cell_grid[self.end[0][0]][self.end[0][1]].def_color((140,140,140),(50,50,50))
-        aux_debug = [new_end_cell[0],new_end_cell[1]]
-        if new_end_cell[0] >= self.rows:
-            aux_debug[0] = self.rows-1
-        elif new_end_cell[0] < 0:
-            aux_debug[0] = 0
-        if new_end_cell[1] >= self.cols:
-            aux_debug[1] = self.cols-1
-        elif new_end_cell[1] < 0:
-            aux_debug[1] = 0
-
-        self.end = ((aux_debug[0],aux_debug[1]) , self.end[1], self.end[2])
+        self.cell_grid[self.end[0][0]][self.end[0][1]].def_color(self.cell_grid[self.end[0][0]][self.end[0][1]].prev_fill,self.cell_grid[self.end[0][0]][self.end[0][1]].prev_border)
+        self.end = ((new_end_cell[0],new_end_cell[1]) , self.end[1], self.end[2])
         self.cell_grid[self.end[0][0]][self.end[0][1]].def_color(self.end[1],self.end[2])
 
     def update(self):

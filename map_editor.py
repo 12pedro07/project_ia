@@ -30,10 +30,18 @@ class edit_tools:
 def edit_cell(mp,coord,mode):
     cell_i = int(coord[1]/mp.altura) # vertical (line)
     cell_j = int(coord[0]/mp.base) # horizontal (col)
+    if cell_i >= mp.rows:
+        cell_i = mp.rows-1
+    elif cell_i < 0:
+        cell_i = 0
+    if cell_j >= mp.cols:
+        cell_j = mp.cols-1
+    elif cell_j < 0:
+        cell_j = 0
     if mode == 1:
-        mp.cell_grid[cell_i][cell_j].fill = (0,0,0)
+        mp.cell_grid[cell_i][cell_j].def_color((0,0,0),(0,0,0))
     elif mode == 2:
-        mp.cell_grid[cell_i][cell_j].fill = (140,140,140)
+        mp.cell_grid[cell_i][cell_j].def_color((140,140,140),(50,50,50))
     elif mode == 3:
         mp.change_start((cell_i,cell_j))
     elif mode == 4:
