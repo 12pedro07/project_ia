@@ -22,7 +22,7 @@ mp = Map(r,c,w,h)
 map_editor(mp)
 
 # for tests
-# mp = Map(5,5,1200,800)
+# mp = Map(10,10,800,800)
 # mouse = mousecoord(mp)
 # cv2.setMouseCallback('image',mouse.mouse_callback)
 
@@ -33,6 +33,8 @@ thrd = threading.Thread(target=background) # Create the thread
 thrd.daemon = True # python will shut down the thread when the code end
 thrd.start() # start running the thread
 
+print("\n\n"+"-"*65+"\n---   Type up / down / left / right to move particle around   ---\n"+"-"*65+"\n\n")
+
 while(True):
     val = get_input(p)
     if val == -1:
@@ -40,6 +42,6 @@ while(True):
     else:
         pass
 
-print("Closing...\n")
+print("End poit reached!\nSelect the maze and press esc to close...\n")
 cv2.waitKey(0)
 cv2.destroyAllWindows()

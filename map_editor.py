@@ -10,7 +10,7 @@ class edit_tools:
 
     def usr_input(self):
         while(self.mode != 0):
-            print("#"*61 + "\n### exit (0) / wall (1) / space (2) / start (3) / end (4) ###\n" + "#"*61)
+            print("#"*61 + "\n### done (0) / wall (1) / space (2) / start (3) / end (4) ###\n" + "#"*61)
             inp = int(input("option: "))
             self.mode = inp
 
@@ -51,6 +51,7 @@ def edit_cell(mp,coord,mode):
         #print(cell_i,cell_j)
 
 def map_editor(mp):
+    print("\n\n"+"-"*65+"\n---             Use the mouse to create your maze             ---\n--- type the mode on the terminal to select parts of the maze ---\n"+"-"*65+"\n\n")
     mouse = edit_tools(mp)
     cv2.setMouseCallback('image',mouse.mouse_callback)
 
