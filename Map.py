@@ -22,7 +22,7 @@ class Map:
         grid = [ [ [ ((self.base/2)+x*self.base) , ((self.altura/2)+y*self.altura) ] for x in range(self.cols)] for y in range(self.rows)]
 
         # define start and end points
-        # (row,col,fill,border)
+        # ((row,col),fill,border)
         self.start = ((0,0) , (255,255,0), (50,50,50))
         self.end   = ((0,0) , (30,30,135)  , (50,50,50))
 
@@ -46,36 +46,42 @@ class Map:
         self.end = ((new_end_cell[0],new_end_cell[1]) , self.end[1], self.end[2])
         self.cell_grid[self.end[0][0]][self.end[0][1]].def_color(self.end[1],self.end[2])
 
-    def check_neighbors(self,y,x): # y = row / x = col
+    def check_all_neighbours(self):
+        for i in range(len(self.cell_grid)):
+            for j in range(len(self.cell_grid[i])):
+                self.cell_grid[i][j].neighbours = self.check_neighbours(i,j)
 
-        ymax = len(self.cell_grid)-1
-        xmax = len(self.cell_grid[0])-1
-        #print("*** ymax: ",ymax," / xmax: ",xmax)
 
-        neighbors = []
+    def check_neighbours(self,i,j): # i = row / j = col
+
+        imax = len(self.cell_grid)-1
+        jmax = len(self.cell_grid[0])-1
+        #print("*** imax: ",imax," / jmax: ",jmax)
+
+        neighbours = []
         end = self.end[0]
 
         # Adjacents
-        if (y < ymax):
-            if (( self.cell_grid[y+1][x].fill != (0,0,0) or (y+1,x) == end)): neighbors.append(((y+1,x),"down"))
-        if (y > 0):
-            if (( self.cell_grid[y-1][x].fill != (0,0,0) or (y-1,x) == end)): neighbors.append(((y-1,x),"up"))
-        if (x < xmax):
-            if (( self.cell_grid[y][x+1].fill != (0,0,0) or (y,x+1) == end)): neighbors.append(((y,x+1),"right"))
-        if (x > 0):
-            if (( self.cell_grid[y][x-1].fill != (0,0,0) or (y,x-1) == end)): neighbors.append(((y,x-1),"left"))
+        if (i < imax):
+            if (( self.cell_grid[i+1][j].fill != (0,0,0) or (i+1,j) == end)): neighbours.append(((i+1,j),"down"))
+        if (i > 0):
+            if (( self.cell_grid[i-1][j].fill != (0,0,0) or (i-1,j) == end)): neighbours.append(((i-1,j),"up"))
+        if (j < jmax):
+            if (( self.cell_grid[i][j+1].fill != (0,0,0) or (i,j+1) == end)): neighbours.append(((i,j+1),"right"))
+        if (j > 0):
+            if (( self.cell_grid[i][j-1].fill != (0,0,0) or (i,j-1) == end)): neighbours.append(((i,j-1),"left"))
 
         # Diagonals
-        if (y > 0 and x > 0):
-            if (( self.cell_grid[y-1][x-1].fill != (0,0,0) or (y-1,x-1) == end)): neighbors.append(((y-1,x-1),"upleft"))
-        if (y > 0 and x < xmax):
-            if (( self.cell_grid[y-1][x+1].fill != (0,0,0) or (y-1,x+1) == end)): neighbors.append(((y-1,x+1),"upright"))
-        if (y < ymax and x > 0):
-            if (( self.cell_grid[y+1][x-1].fill != (0,0,0) or (y+1,x-1) == end)): neighbors.append(((y+1,x-1),"downleft"))
-        if (y < ymax and x < xmax):
-            if (( self.cell_grid[y+1][x+1].fill != (0,0,0) or (y+1,x+1) == end)): neighbors.append(((y+1,x+1),"downright"))
+        if (i > 0 and j > 0):
+            if (( self.cell_grid[i-1][j-1].fill != (0,0,0) or (i-1,j-1) == end)): neighbours.append(((i-1,j-1),"upleft"))
+        if (i > 0 and j < jmax):
+            if (( self.cell_grid[i-1][j+1].fill != (0,0,0) or (i-1,j+1) == end)): neighbours.append(((i-1,j+1),"upright"))
+        if (i < imax and j > 0):
+            if (( self.cell_grid[i+1][j-1].fill != (0,0,0) or (i+1,j-1) == end)): neighbours.append(((i+1,j-1),"downleft"))
+        if (i < imax and j < jmax):
+            if (( self.cell_grid[i+1][j+1].fill != (0,0,0) or (i+1,j+1) == end)): neighbours.append(((i+1,j+1),"downright"))
 
-        return neighbors
+        return neighbours
 
     def update(self):
         # drawing the grid
@@ -83,7 +89,6 @@ class Map:
         for i in range(len(self.cell_grid)):
             for j in range(len(self.cell_grid[i])):
                 self.cell_grid[i][j].draw_cell(self.img)
-                self.cell_grid[i][j].neighbors = self.check_neighbors(i,j)
                 #cell_grid[i][j].show_id(img)
         cv2.imshow('image',self.img)
         cv2.waitKey(1)

@@ -63,3 +63,4 @@ def map_editor(mp):
     while (mouse.mode != 0):
         mp.update()
     cv2.setMouseCallback('image', lambda *args : None)
+    mp.check_all_neighbours()
