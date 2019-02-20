@@ -69,6 +69,7 @@ def AStar(mp): # map
                 node.def_color((0,0,255),(0,0,0))
         q.def_color((255,255,0),(0,0,0))
         time.sleep(0.05)
+        q.def_color((0,0,255),(0,0,0))
 
     while(q.parent != None):
         q.def_color((0,255,0),(0,0,0))

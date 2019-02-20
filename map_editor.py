@@ -1,5 +1,6 @@
 import cv2
 import threading
+import pickle
 
 class edit_tools:
     def __init__(self,mp):
@@ -50,6 +51,9 @@ def edit_cell(mp,coord,mode):
         print("Error: Invalid mode, please change and try again...\nchose another option: ")
         #print(cell_i,cell_j)
 
+def nothing(arg):
+    pass
+
 def map_editor(mp):
     print("\n\n"+"-"*65+"\n---             Use the mouse to create your maze             ---\n--- type the mode on the terminal to select parts of the maze ---\n"+"-"*65+"\n\n")
     mouse = edit_tools(mp)
@@ -64,3 +68,13 @@ def map_editor(mp):
         mp.update()
     cv2.setMouseCallback('image', lambda *args : None)
     mp.check_all_neighbours()
+
+    option = ""
+    while(option != "y" and option != "n"):
+        option = input("Save maze? (y/n): ")
+        print(option,option != "y" or option != "n")
+    if option == "y":
+        name = input("File name: ")
+        myfile = open(name+'.txt','wb')
+        pickle.dump(mp,myfile)
+        myfile.close()
