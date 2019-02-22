@@ -4,73 +4,75 @@ import math
 import cv2
 import time
 
-def update_vals(mp,current_cell,flag=""):
-    # for simplification purposes
-    end_cell = mp.cell_grid[mp.end[0][0]][mp.end[0][1]]
+# x = i, y = j
 
-    for node in current_cell.neighbours:
+def retracing(startNode,endNode):
+    path = []
+    current_node = endNode
 
-        # update g value
-        if (flag == "-A" or flag == "-g"):
-            if (len(node[1]) > 5 and mp.cell_grid[node[0][0]][node[0][1]].g > current_cell.g + 14): # if it's a diagonal (based on the size of the word)
-                mp.cell_grid[node[0][0]][node[0][1]].g = current_cell.g + 14
-            elif(mp.cell_grid[node[0][0]][node[0][1]].g > current_cell.g + 10):
-                mp.cell_grid[node[0][0]][node[0][1]].g = current_cell.g + 10
-            else:
-                pass
+    while (current_node.id != startNode.id):
+        current_node.def_color((255,255,255),(0,0,0))
+        path.append(current_node)
+        current_node = current_node.parent
 
-        # update h value
-        if (flag == "-A" or flag == "-h"):
-            mp.cell_grid[node[0][0]][node[0][1]].h = math.sqrt((current_cell.i - end_cell.i)**2 + (current_cell.j - end_cell.j)**2)
+    path = path[::-1]
 
-        # update f value
-        if (flag == "-A" or flag == "-f"):
-            mp.cell_grid[node[0][0]][node[0][1]].f = mp.cell_grid[node[0][0]][node[0][1]].g + mp.cell_grid[node[0][0]][node[0][1]].h
+def update_fCost(mp,current_node):
+    current_node.f = current_node.g + current_node.h
+
+def node_dist(node1,node2):
+    dsti = abs(node1.mp_i - node2.mp_i)
+    dstj = abs(node1.mp_j - node2.mp_j)
+
+    if dsti > dstj:
+        return 14*dstj + 10*(dsti - dstj)
+    return 14*dsti + 10*(dstj - dsti)
+
 
 def AStar(mp): # map
-    finish = False
 
     mp.cell_grid[mp.start[0][0]][mp.start[0][1]].g = 0
-    open_list   = [mp.cell_grid[mp.start[0][0]][mp.start[0][1]]]
-    closed_list = []
-    # calculate g h and f vals
-    update_vals(mp,open_list[0],"-A")
+    open_set   = [mp.cell_grid[mp.start[0][0]][mp.start[0][1]]]
+    closed_set = []
+
     # start A* process
-    while(len(open_list) > 0 or finish == False):
-        # find the node with the lower f value and call it "q"
-        q = open_list[0]
-        for node in open_list:
-            if node.f < q.f:
-                q = node
-        # list management
-        open_list.remove(q)
-        closed_list.append(q)
+    while(len(open_set) > 0):
+        current_node = open_set[0]
+        for i in range(1,len(open_set)):
+            if open_set[i].f < current_node.f or open_set[i].f < current_node.f and open_set[i].h < current_node.h:
+                current_node = open_set[i]
 
-        # check if current node is the final node
-        if (q.id == mp.cell_grid[mp.end[0][0]][mp.end[0][1]].id):
-            print("DONE!")
-            break
+        open_set.remove(current_node)
+        closed_set.append(current_node)
+        if current_node.id == mp.cell_grid[mp.end[0][0]][mp.end[0][1]].id:
+            retracing(mp.cell_grid[mp.start[0][0]][mp.start[0][1]],mp.cell_grid[mp.end[0][0]][mp.end[0][1]])
+            print("end")
+            return
 
-        for neighbour in q.neighbours:
-            if mp.cell_grid[neighbour[0][0]][neighbour[0][1]] in closed_list:
+        for neighbour in current_node.neighbours:
+            ni = neighbour[0][0]
+            nj = neighbour[0][1]
+            if mp.cell_grid[ni][nj] in closed_set:
                 continue
 
-            # update values
-            update_vals(mp,q,"-A")
-            if mp.cell_grid[neighbour[0][0]][neighbour[0][1]] not in open_list:
-                mp.cell_grid[neighbour[0][0]][neighbour[0][1]].parent = q
-                if mp.cell_grid[neighbour[0][0]][neighbour[0][1]] not in open_list:
-                    open_list.append(mp.cell_grid[neighbour[0][0]][neighbour[0][1]])
+            newMovCost = current_node.g + node_dist(current_node,mp.cell_grid[ni][nj])
 
-        for node in open_list:
+            if newMovCost < mp.cell_grid[ni][nj].g or (mp.cell_grid[ni][nj] not in open_set):
+                mp.cell_grid[ni][nj].g = newMovCost
+                mp.cell_grid[ni][nj].h = node_dist(mp.cell_grid[ni][nj],mp.cell_grid[mp.end[0][0]][mp.end[0][1]])
+                update_fCost(mp,mp.cell_grid[ni][nj])
+                mp.cell_grid[ni][nj].parent = current_node
+                if mp.cell_grid[ni][nj] not in open_set:
+                    open_set.append(mp.cell_grid[ni][nj])
+
+        for node in open_set:
             node.def_color((255,0,0),(0,0,0))
-        if len(closed_list) != 0:
-            for node in closed_list:
-                node.def_color((0,0,255),(0,0,0))
-        q.def_color((255,255,0),(0,0,0))
-        time.sleep(0.05)
-        q.def_color((0,0,255),(0,0,0))
-
-    while(q.parent != None):
-        q.def_color((0,255,0),(0,0,0))
-        q = q.parent
+        if len(closed_set) != 0:
+            for node in closed_set:
+                if node.id != mp.cell_grid[mp.start[0][0]][mp.start[0][1]].id:
+                    node.def_color((0,0,255),(0,0,0))
+        current_node.def_color((255,255,0),(0,0,0))
+        time.sleep(0.01)
+        # cv2.waitKey(0)
+        if current_node.id != mp.cell_grid[mp.start[0][0]][mp.start[0][1]].id:
+            current_node.def_color((0,0,255),(0,0,0))

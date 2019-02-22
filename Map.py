@@ -30,7 +30,7 @@ class Map:
         self.cell_grid = [ [] for y in range(self.rows)]
         for i in range(len(grid)):
             for j in range(len(grid[i])):
-                cell = Cell(grid[i][j][0],grid[i][j][1],self.base,self.altura,j+i*self.rows)
+                cell = Cell(grid[i][j][0],grid[i][j][1],self.base,self.altura,j+i*self.rows,i,j)
                 self.cell_grid[i].append(cell)
 
     def change_start(self,new_start_cell):

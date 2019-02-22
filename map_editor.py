@@ -13,6 +13,8 @@ class edit_tools:
         while(self.mode != 0):
             print("#"*61 + "\n### done (0) / wall (1) / space (2) / start (3) / end (4) ###\n" + "#"*61)
             inp = int(input("option: "))
+            self.map.cell_grid[self.map.start[0][0]][self.map.start[0][1]].prev_fill = (140,140,140)
+            self.map.cell_grid[self.map.end[0][0]][self.map.end[0][1]].prev_fill = (140,140,140)
             self.mode = inp
 
     def mouse_callback(self,event,x,y,flags,param):
@@ -72,7 +74,6 @@ def map_editor(mp):
     option = ""
     while(option != "y" and option != "n"):
         option = input("Save maze? (y/n): ")
-        print(option,option != "y" or option != "n")
     if option == "y":
         name = input("File name: ")
         myfile = open(name+'.txt','wb')
