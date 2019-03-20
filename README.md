@@ -11,3 +11,5 @@ This project contains:
 Requirements: python3 / opencv / numpy / pickle
 
 To run the code, run execute.py file using python3
+
+Link for a video demonstration: https://youtu.be/wMCLEV-lWZY
